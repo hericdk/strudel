@@ -85,7 +85,202 @@ body {
   color: var(--erro);
 }
 
+/* ---------- troca de tela ---------- */
+
+section {
+  display: none;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.na-biblioteca #tela-biblioteca,
+.no-editor #tela-editor {
+  display: flex;
+}
+
+/* o desenho do .pianoroll() ocupa a tela toda; na lista ele atrapalharia */
+.na-biblioteca #test-canvas {
+  display: none;
+}
+
+/* ---------- tela inicial ---------- */
+
+.grade {
+  flex: 1;
+  overflow: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
+  align-content: start;
+  gap: 16px;
+  padding: 16px;
+}
+
+.caixa {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  background: var(--fundo-barra);
+  border: 1px solid var(--borda);
+  border-radius: 10px;
+}
+
+.caixa.tocando {
+  border-color: var(--destaque);
+  box-shadow: 0 0 0 1px var(--destaque);
+}
+
+.caixa h3 {
+  margin: 0;
+  font-size: 16px;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+
+.caixa .meta {
+  margin: 0;
+  font-size: 12px;
+  color: var(--texto-suave);
+}
+
+.caixa pre {
+  margin: 0;
+  flex: 1;
+  min-height: 120px;
+  padding: 8px;
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--texto-suave);
+  background: #15151c;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.erro-previa {
+  margin: 0;
+  font-size: 12px;
+  color: var(--erro);
+  overflow-wrap: anywhere;
+}
+
+.erro-previa:empty {
+  display: none;
+}
+
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.acoes button,
+.historico button {
+  font: inherit;
+  font-size: 13px;
+  color: var(--texto);
+  background: #2c2c3c;
+  border: 1px solid var(--borda);
+  border-radius: 6px;
+  padding: 5px 9px;
+  cursor: pointer;
+}
+
+.acoes button:hover,
+.historico button:hover {
+  border-color: var(--texto-suave);
+}
+
+/* ---------- editor ---------- */
+
+.nome {
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--texto);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 5px 8px;
+  width: 14em;
+  max-width: 100%;
+}
+
+.nome:hover,
+.nome:focus {
+  border-color: var(--borda);
+  outline: none;
+}
+
+.corpo-editor {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
 #area-editor {
   flex: 1;
   overflow: auto;
+  min-width: 0;
+}
+
+.historico {
+  width: 300px;
+  flex-shrink: 0;
+  overflow: auto;
+  padding: 12px 16px;
+  background: var(--fundo-barra);
+  border-left: 1px solid var(--borda);
+  position: relative;
+  z-index: 10;
+}
+
+.historico[hidden] {
+  display: none;
+}
+
+.historico h2 {
+  margin: 0 0 4px;
+  font-size: 16px;
+}
+
+.historico .dica {
+  margin: 0 0 12px;
+  font-size: 12px;
+  color: var(--texto-suave);
+}
+
+.historico ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.historico li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.historico li span {
+  flex: 1 1 100%;
+}
+
+@media (max-width: 700px) {
+  .corpo-editor {
+    flex-direction: column;
+  }
+
+  .historico {
+    width: auto;
+    max-height: 40vh;
+    border-left: none;
+    border-top: 1px solid var(--borda);
+  }
 }
