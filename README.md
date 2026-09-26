@@ -10,7 +10,7 @@ para instalar nem compilar.
 ### 1. Abrir no navegador
 
 **No seu site (ex.: chuva.tech/strudel):** envie a pasta inteira (`index.html`, `css/`, `js/`,
-`padroes/`) para o servidor. Não precisa de nada especial no servidor — são arquivos estáticos, e
+`dados/`, `padroes/`) para o servidor. Não precisa de nada especial no servidor — são arquivos estáticos, e
 os caminhos são relativos, então funciona em qualquer subpasta.
 
 **Online (GitHub Pages)** — uma vez só:
@@ -54,11 +54,64 @@ No topo: **＋ Novo**, **⬇ Exportar tudo** (um `.json` com todos os sons e his
 | Tocar / aplicar mudanças   | **Ctrl+Enter** (ou botão ▶ Tocar)            |
 | Parar                      | **Ctrl+.** (ou botão ■ Parar)                |
 | Reavaliar sozinho          | marque **Ao vivo**: depois de tocar, cada pausa na digitação já aplica o código |
-| Renomear                   | clique no nome, ao lado de **← Sons**        |
+| Autocompletar              | aparece sozinho enquanto digita; **Enter** aceita, **Esc** fecha |
+| Renomear                   | clique no nome, ao lado de **← Biblioteca**  |
 | Guardar uma versão         | **✚ Salvar versão**                          |
-| Ver / voltar versões       | **🕘 Histórico** → **Abrir** (o código atual vira uma versão antes, nada se perde) |
-| Baixar como texto          | **⬇ .txt** (o código atual) ou **⬇ .txt** numa versão do histórico |
-| Voltar para a lista        | **← Sons**                                   |
+| Painel (sons, referência…) | botão **☰** no canto direito                 |
+| Fundo de tela              | botão **🖼**                                  |
+| Gravar vídeo               | botão **⏺** (clique de novo para parar)      |
+| Voltar para a lista        | **← Biblioteca**                             |
+
+### 4. Painel ☰ (igual às abas do strudel.cc)
+
+- **Sons** — todos os sons disponíveis (amostras, baterias, sintetizadores, instrumentos GM), com
+  busca e filtros. Clique para ouvir; use o nome em `s("nome")`. O número entre parênteses é quantas
+  variações existem (escolha com `n("0 1 2")`). Baterias usam `s("bd").bank("RolandTR909")`.
+- **Referência** — as ~500 funções do Strudel, com descrição, parâmetros e exemplos (a mesma
+  documentação do site oficial, em inglês).
+- **Console** — mensagens do Strudel: sons carregando, erros.
+- **Histórico** — versões salvas do som; **Abrir** coloca uma versão no editor (o código atual
+  vira uma versão antes, nada se perde).
+- **Config.** — tema (39 temas), fonte, tamanho, atalhos (Padrão/Vim/Emacs/VS Code), autocompletar,
+  documentação ao passar o mouse, destaque do que toca, números de linha e as demais opções do
+  original; no áudio: saída de áudio (Chrome/Edge), polifonia e orbits multicanal.
+
+### 5. Fundo de tela 🖼
+
+- **Vídeo** — um arquivo `.mp4`/`.webm` do computador ou celular (fica guardado no navegador) ou
+  um link direto para o vídeo.
+- **YouTube** — cole o link; toca sem som e em loop.
+- **Visualizador em código** — JavaScript que roda a cada quadro num canvas atrás do editor,
+  reagindo ao som. Recebe `ctx` (canvas 2D) e `d`:
+
+  | Em `d`                          | O que é                                             |
+  | ------------------------------- | --------------------------------------------------- |
+  | `d.t`                           | segundos desde que o fundo começou                  |
+  | `d.largura`, `d.altura`         | tamanho do canvas                                   |
+  | `d.volume`                      | volume geral da saída, 0 a 1                         |
+  | `d.graves`, `d.medios`, `d.agudos` | energia por faixa, 0 a 1                         |
+  | `d.onda`, `d.espectro`          | forma de onda (-1..1) e espectro (0..1) da saída    |
+  | `d.scope()`, `d.scope(2)`       | `{ onda, espectro, volume }` do 1º, 2º… `._scope()` do código |
+  | `d.cor`                         | cor do texto do tema                                |
+
+  Os `._scope()` do seu som continuam exatamente como são: o fundo só **lê** os valores deles.
+  Se o som não tiver `._scope()`, use `d.onda`/`d.volume` (saída geral).
+- **Escurecer o fundo** deixa o código legível por cima.
+- Alternativa sem sair do som: o Strudel já traz o [Hydra](https://strudel.cc/learn/hydra/)
+  (`await initHydra()` no próprio código) para visuais.
+
+### 6. Gravar vídeo ⏺
+
+- **Computador** (Chrome, Edge, Firefox, Safari): o navegador pergunta o que compartilhar —
+  escolha **esta aba**. O vídeo sai exatamente como a tela, com o som do Strudel.
+- **Celular (iPhone/iPad e Android):** navegadores de celular não deixam um site filmar a tela.
+  Por isso, lá o vídeo é montado pela própria página: fundo + código com as cores do tema +
+  pianoroll/scope/Hydra, com o som do Strudel. Fundo do YouTube não entra (o YouTube bloqueia);
+  vídeo de outro site só entra se for um arquivo escolhido do aparelho.
+  Se quiser a tela exata no iPhone, use a gravação de tela do próprio iOS (Central de Controle).
+- Ao parar, aparece **⬇ Baixar vídeo** (e **↗ Compartilhar / salvar**, que no iPhone permite
+  **Salvar Vídeo** direto na galeria). O arquivo sai em `.mp4` quando o navegador suporta
+  (Safari e Chrome recentes) ou `.webm`.
 
 O navegador só libera som depois de um clique na página — se não ouvir nada, clique em ▶ Tocar.
 Os sons (bateria, piano etc.) são baixados da internet na primeira vez, então pode demorar alguns
@@ -98,6 +151,11 @@ index.html          a página: tela inicial (caixas) + editor
 css/estilo.css      aparência
 js/app.js           telas, botões, prévia, modo "ao vivo", histórico
 js/biblioteca.js    salvar/carregar sons e versões (formato JSON)
+js/painel.js        abas Sons, Referência, Console e Configurações
+js/fundo.js         fundo de tela (vídeo, YouTube, visualizador em código)
+js/gravacao.js      gravar vídeo da tela
+dados/referencia.json   documentação das funções (tirada do pacote do Strudel)
+ferramentas/        script para atualizar a referência
 padroes/            exemplos iniciais (.js) + lista.json
 ```
 
@@ -117,7 +175,8 @@ Sim, dá para mudar tudo — é só HTML, CSS e JavaScript comuns:
   pequeno back-end (ou um serviço como Supabase/Firebase) no lugar de `js/biblioteca.js`.
 - **Atualizar o Strudel:** troque o número `1.3.0` em `index.html` pela versão mais nova
   (veja em <https://www.npmjs.com/package/@strudel/repl>). A versão fica fixa de propósito, para
-  nada quebrar sozinho.
+  nada quebrar sozinho. Depois rode `node ferramentas/atualizar-referencia.mjs 1.x.y` para a aba
+  Referência acompanhar a nova versão.
 
 ## Licença
 

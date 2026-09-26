@@ -3,15 +3,13 @@
 // tela do editor e escondido na tela inicial, onde é usado para tocar as prévias.
 
 import * as biblioteca from './biblioteca.js';
+import { iniciarPainel } from './painel.js';
+import { iniciarFundo } from './fundo.js';
+import { iniciarGravacao } from './gravacao.js';
 
 const ESPERA_AO_VIVO_MS = 800;
 const ESPERA_AUTOSAVE_MS = 500;
 const LINHAS_PREVIA = 8;
-const CODIGO_NOVO = `// Novo som — Ctrl+Enter para tocar, Ctrl+. para parar
-setcps(0.5)
-
-$: s("bd ~ sd ~")
-`;
 
 const $ = (id) => document.getElementById(id);
 
@@ -22,10 +20,6 @@ let timerAoVivo;
 let timerAutosave;
 
 // ---------- utilidades ----------
-
-function nomeDeArquivo(nome) {
-  return nome.trim().replace(/[^\p{L}\p{N}_-]+/gu, '-').replace(/^-+|-+$/g, '') || 'som';
-}
 
 function baixar(nome, texto, tipo) {
   const link = document.createElement('a');
@@ -61,7 +55,7 @@ function desenharGrade() {
 
   for (const som of sons) {
     const tocando = som.id === emPrevia;
-    const previa = som.codigo.split('\n').slice(0, LINHAS_PREVIA).join('\n');
+    const previa = som.codigo.split('\n').slice(0, LINHAS_PREVIA).join('\n') || '(vazio)';
     const botao = (texto, titulo, acao) => criarEl('button', { type: 'button', textContent: texto, title: titulo, onclick: acao });
 
     const caixa = criarEl(
@@ -154,7 +148,7 @@ function desenharHistorico() {
   const lista = $('lista-versoes');
   lista.innerHTML = '';
   const som = biblioteca.pegar(atual);
-  som.versoes.forEach((versao, i) => {
+  som.versoes.forEach((versao) => {
     const linhas = versao.codigo.split('\n').length;
     lista.append(
       criarEl(
@@ -172,11 +166,6 @@ function desenharHistorico() {
             salvarAgora();
             desenharHistorico();
           },
-        }),
-        criarEl('button', {
-          type: 'button',
-          textContent: '⬇ .txt',
-          onclick: () => baixar(`${nomeDeArquivo(som.nome)}-v${som.versoes.length - i}.txt`, versao.codigo, 'text/plain'),
         }),
       ),
     );
@@ -226,7 +215,7 @@ function mostrarTela() {
 }
 
 function ligarBotoes() {
-  $('novo').onclick = () => abrirEditor(biblioteca.criar('novo som', CODIGO_NOVO).id);
+  $('novo').onclick = () => abrirEditor(biblioteca.criar('novo som', '').id);
   $('exportar').onclick = () => {
     const dia = new Date().toISOString().slice(0, 10);
     baixar(`strudel-sons-${dia}.json`, biblioteca.exportarJson(), 'application/json');
@@ -255,8 +244,15 @@ function ligarBotoes() {
     mostrarStatus($('status'), criou ? 'versão salva no histórico' : 'nada mudou desde a última versão');
     desenharHistorico();
   };
-  $('abrir-historico').onclick = () => ($('historico').hidden = !$('historico').hidden);
-  $('baixar').onclick = () => baixar(`${nomeDeArquivo($('nome').value)}.txt`, repl.editor.code, 'text/plain');
+  // painel (sons, referência...) e fundo de tela ocupam o mesmo lugar: abre um fecha o outro
+  const alternar = (qual, outro) => {
+    $(qual).hidden = !$(qual).hidden;
+    $(outro).hidden = true;
+    $('abrir-painel').classList.toggle('ativo', !$('painel').hidden);
+    $('abrir-fundo').classList.toggle('ativo', !$('painel-fundo').hidden);
+  };
+  $('abrir-painel').onclick = () => alternar('painel', 'painel-fundo');
+  $('abrir-fundo').onclick = () => alternar('painel-fundo', 'painel');
 
   window.addEventListener('hashchange', mostrarTela);
   // garante que nada se perde ao fechar a aba
@@ -272,7 +268,10 @@ async function iniciar() {
   $('area-editor').append(repl);
 
   ligarBotoes();
+  iniciarFundo();
+  iniciarGravacao();
   mostrarTela();
+  await iniciarPainel(repl);
 }
 
 iniciar().catch((erro) => mostrarStatus($('status-biblioteca'), `erro ao iniciar: ${erro.message}`, 'erro'));
