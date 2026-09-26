@@ -1,0 +1,91 @@
+:root {
+  --fundo-barra: #1b1b24;
+  --texto: #e8e8f0;
+  --texto-suave: #9a9ab0;
+  --borda: #34344a;
+  --destaque: #7ee0a1;
+  --erro: #ff7a7a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: #22222c;
+  color: var(--texto);
+  font-family: system-ui, sans-serif;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+.barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 8px 16px;
+  background: var(--fundo-barra);
+  border-bottom: 1px solid var(--borda);
+  position: relative;
+  z-index: 10;
+}
+
+.titulo {
+  font-size: 18px;
+  margin-right: 8px;
+}
+
+.barra button,
+.barra select {
+  font: inherit;
+  font-size: 14px;
+  color: var(--texto);
+  background: #2c2c3c;
+  border: 1px solid var(--borda);
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.barra button:hover,
+.barra select:hover {
+  border-color: var(--texto-suave);
+}
+
+.campo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--texto-suave);
+}
+
+.status {
+  margin-left: auto;
+  font-size: 13px;
+  color: var(--texto-suave);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status.tocando {
+  color: var(--destaque);
+}
+
+.status.erro {
+  color: var(--erro);
+}
+
+#area-editor {
+  flex: 1;
+  overflow: auto;
+}

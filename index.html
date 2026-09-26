@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Strudel ao vivo</title>
+    <link rel="stylesheet" href="css/estilo.css" />
+    <!-- Strudel (editor + motor de áudio) direto da CDN, versão fixa.
+         Para atualizar, troque o número da versão (veja o README). -->
+    <script src="https://unpkg.com/@strudel/repl@1.3.0/dist/index.js"></script>
+  </head>
+  <body>
+    <header class="barra">
+      <strong class="titulo">Strudel</strong>
+
+      <button id="tocar" type="button" title="Ctrl+Enter">▶ Tocar</button>
+      <button id="parar" type="button" title="Ctrl+.">■ Parar</button>
+
+      <label class="campo">
+        Padrão
+        <select id="padroes"></select>
+      </label>
+
+      <label class="campo" title="Reavalia o código sozinho enquanto você digita (só quando já está tocando)">
+        <input id="ao-vivo" type="checkbox" />
+        Ao vivo
+      </label>
+
+      <button id="baixar" type="button" title="Baixa o código atual como arquivo .js">⬇ Baixar</button>
+
+      <span id="status" class="status">carregando…</span>
+    </header>
+
+    <main id="area-editor"></main>
+
+    <script src="js/app.js"></script>
+  </body>
+</html>
